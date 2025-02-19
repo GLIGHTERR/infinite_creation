@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:infinite_creation/config/app_config.dart';
+import 'package:infinite_creation/config/env.dev.dart';
+import 'package:infinite_creation/config/env.prod.dart';
 import 'package:infinite_creation/screens/main_screen.dart';
+import 'package:infinite_creation/services/auth_service.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  if (const bool.fromEnvironment('dart.vm.product')) {
+    AppConfig.initialize(ProdEnv());
+  } else {
+    // AppConfig.initialize(await DevEnv.create());
+    AppConfig.initialize(DevEnv());
+  }
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AuthService _authService = AuthService();
+
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -35,7 +48,24 @@ class MyApp extends StatelessWidget {
       // ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      home: FutureBuilder(
+          future: _authService.authenticateGuest(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            }
+
+            return MainScreen();
+          }
+      ),
     );
   }
 }

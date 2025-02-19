@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:infinite_creation/models/item.dart';
 
 class ItemButton extends StatefulWidget {
-  final Map<String, dynamic> item;
+  final Item item;
 
   const ItemButton({
     super.key,
@@ -36,13 +37,13 @@ class ItemButtonState extends State<ItemButton> {
           mainAxisSize: MainAxisSize.min, // Điều chỉnh kích thước theo nội dung
           children: [
             Icon(
-              widget.item['icon'],
+              widget.item.icon,
               color: Colors.blue,
               size: 20, // Kích thước biểu tượng nhỏ hơn
             ),
             const SizedBox(width: 4), // Khoảng cách giữa icon và text
             Text(
-              widget.item['label'],
+              widget.item.label,
               style: const TextStyle(
                 fontSize: 18, // Kích thước chữ nhỏ hơn
               ),
